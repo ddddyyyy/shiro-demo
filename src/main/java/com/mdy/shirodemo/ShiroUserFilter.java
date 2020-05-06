@@ -1,6 +1,5 @@
 package com.mdy.shirodemo;
 
-import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.web.filter.authc.UserFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,7 +42,6 @@ public class ShiroUserFilter extends UserFilter {
         setHeader((HttpServletRequest) request, (HttpServletResponse) response);
         PrintWriter out = response.getWriter();
         out.println("please login");
-//        out.println(JSONObject.toJSONString(ResultUtil.error(ExceptionEnum.IS_NOT_LOGIN)));
         out.flush();
         out.close();
     }
