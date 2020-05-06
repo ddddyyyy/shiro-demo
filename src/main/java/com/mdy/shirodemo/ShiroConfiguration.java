@@ -2,12 +2,14 @@ package com.mdy.shirodemo;
 
 
 import org.apache.shiro.authc.credential.CredentialsMatcher;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -49,10 +51,37 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/**", "custom");
         filterChainDefinitionMap.put("/test", "user");
-        filterChainDefinitionMap.put("/logout", "logout");
         bean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return bean;
     }
+
+
+    /**
+     * cookie对象;
+     * rememberMeCookie()方法是设置Cookie的生成模版，比如cookie的name，cookie的有效时间等等。
+     */
+    private SimpleCookie rememberMeCookie() {
+        //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
+        SimpleCookie simpleCookie = new SimpleCookie("rememberME");
+        //<!-- 记住我cookie生效时间7天 ,单位秒;-->
+        //二级域名
+//        simpleCookie.setDomain(".zsyyjs2018.com");
+//        simpleCookie.setPath("/");
+        simpleCookie.setMaxAge(6048000);
+        return simpleCookie;
+    }
+
+    /**
+     * cookie管理对象;
+     * rememberMeManager()方法是生成rememberMe管理器，而且要将这个rememberMe管理器设置到securityManager中
+     */
+    private CookieRememberMeManager rememberMeManager() {
+        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
+        cookieRememberMeManager.setCookie(rememberMeCookie());
+        cookieRememberMeManager.setCipherKey(Base64.decode("AztiX2RUqhc7dhOzl1Mj8Q=="));
+        return cookieRememberMeManager;
+    }
+
 
     /**
      * 配置核心安全事务管理器
@@ -62,6 +91,7 @@ public class ShiroConfiguration {
     @Bean
     public SecurityManager securityManager(MyShiroRealm myShiroRealm) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
+        manager.setRememberMeManager(rememberMeManager());
         manager.setRealm(myShiroRealm);
         return manager;
     }
