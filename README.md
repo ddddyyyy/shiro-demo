@@ -7,7 +7,7 @@
 * shiro: 1.5.2
 
 
-## Test case to reproduce the error that could not serialize remeberMe cookie
+## Test case to reproduce the error that could not resovle remeberMe cookie
 
 * login to generate the remeberMe cookie： http://127.0.0.1:8081/login
 * delete the JSESSIONID
